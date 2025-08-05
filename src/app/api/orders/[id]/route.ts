@@ -19,7 +19,7 @@ export async function GET(
 
     const order = await prisma.order.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id
       },
       include: {
