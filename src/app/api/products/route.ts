@@ -4,6 +4,9 @@ import { prisma } from '@/lib/prisma'
 // GET /api/products - 상품 목록 조회
 export async function GET(request: NextRequest) {
   try {
+    console.log('🚀 API 요청 시작 - 환경:', process.env.NODE_ENV)
+    console.log('🔗 DATABASE_URL 존재 여부:', !!process.env.DATABASE_URL)
+    
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '12')
@@ -48,6 +51,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 상품 조회
+    console.log('🔍 Prisma 쿼리 실행 시작...')
     const products = await prisma.product.findMany({
       where,
       include: {
@@ -101,9 +105,15 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error) {
-    console.error('상품 목록 조회 오류:', error)
+    console.error('❌ 상품 목록 조회 오류:', error)
+    console.error('❌ 오류 상세 정보:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace'
+    })
+    
     return NextResponse.json(
-      { error: '상품 목록을 불러오는데 실패했습니다.' },
+      { error: '상품 목록을 불러오는 중 오류가 발생했습니다.' },
       { status: 500 }
     )
   }
