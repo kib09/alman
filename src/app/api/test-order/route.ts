@@ -52,11 +52,13 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('테스트 주문 생성 오류:', error)
+    const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'
+    const errorStack = error instanceof Error ? error.stack : undefined
+    
     return NextResponse.json(
       { 
         error: '테스트 주문 생성에 실패했습니다.',
-        details: error.message,
-        stack: error.stack
+        details: errorMessage
       },
       { status: 500 }
     )

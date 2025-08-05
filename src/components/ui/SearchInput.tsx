@@ -15,15 +15,17 @@ interface SearchInputProps {
   className?: string
   onSearch?: (query: string) => void
   showSuggestions?: boolean
+  initialValue?: string
 }
 
 export default function SearchInput({ 
   placeholder = "상품을 검색하세요...", 
   className = "",
   onSearch,
-  showSuggestions = true
+  showSuggestions = true,
+  initialValue = ''
 }: SearchInputProps) {
-  const [query, setQuery] = useState('')
+  const [query, setQuery] = useState(initialValue)
   const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([])
   const [showSuggestionsPanel, setShowSuggestionsPanel] = useState(false)
   const [loading, setLoading] = useState(false)

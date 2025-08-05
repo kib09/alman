@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -40,7 +40,7 @@ interface SearchStats {
   hasPrevPage: boolean
 }
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
@@ -100,12 +100,11 @@ export default function SearchPage() {
         setProducts(data.products)
         setStats(data.stats)
         
-        // 로그인된 사용자의 경우 위시리스트 상태 확인
-        if (user && data.products.length > 0) {
-          await checkWishlistStatus(data.products.map((p: Product) => p.id))
+        // 위시리스트 상태 확인
+        if (data.products.length > 0) {
+          const productIds = data.products.map((p: Product) => p.id)
+          checkWishlistStatus(productIds)
         }
-      } else {
-        console.error('검색 실패')
       }
     } catch (error) {
       console.error('검색 오류:', error)
@@ -116,8 +115,7 @@ export default function SearchPage() {
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
-      setSearchQuery(query)
-      updateURLAndSearch()
+      router.push(`/search?q=${encodeURIComponent(query)}`)
     }
   }
 
@@ -128,7 +126,7 @@ export default function SearchPage() {
     if (filters.minPrice) params.set('minPrice', filters.minPrice)
     if (filters.maxPrice) params.set('maxPrice', filters.maxPrice)
     if (filters.sortBy) params.set('sortBy', filters.sortBy)
-
+    
     router.push(`/search?${params.toString()}`)
   }
 
@@ -143,9 +141,9 @@ export default function SearchPage() {
 
   const clearFilters = () => {
     setFilters({ category: '', minPrice: '', maxPrice: '', sortBy: 'relevance' })
-    const params = new URLSearchParams()
-    if (searchQuery) params.set('q', searchQuery)
-    router.push(`/search?${params.toString()}`)
+    if (searchQuery) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
+    }
   }
 
   const handlePageChange = (page: number) => {
@@ -153,241 +151,275 @@ export default function SearchPage() {
   }
 
   const checkWishlistStatus = async (productIds: string[]) => {
-    if (!user || productIds.length === 0) return;
+    if (!user) return
 
     try {
-      const response = await fetch(`/api/wishlist/check?productIds=${productIds.join(',')}`);
+      const response = await fetch('/api/wishlist/check', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productIds }),
+      })
+
       if (response.ok) {
-        const data = await response.json();
-        setWishlistedProductIds(data.wishlistedProductIds);
+        const data = await response.json()
+        setWishlistedProductIds(data.wishlistedIds || [])
       }
     } catch (error) {
-      console.error('위시리스트 상태 확인 오류:', error);
+      console.error('위시리스트 상태 확인 오류:', error)
     }
-  };
+  }
 
-  const sortOptions = [
-    { value: 'relevance', label: '관련성 순' },
-    { value: 'newest', label: '최신순' },
-    { value: 'price_asc', label: '가격 낮은순' },
-    { value: 'price_desc', label: '가격 높은순' },
-    { value: 'rating', label: '평점순' }
-  ]
+  const isWishlisted = (productId: string) => {
+    return wishlistedProductIds.includes(productId)
+  }
 
-  const categories = [
-    { value: '', label: '전체 카테고리' },
-    { value: '정장', label: '정장' },
-    { value: '캐주얼', label: '캐주얼' },
-    { value: '신발', label: '신발' },
-    { value: '액세서리', label: '액세서리' },
-    { value: '스포츠웨어', label: '스포츠웨어' }
-  ]
+  const toggleWishlist = async (productId: string) => {
+    if (!user) {
+      router.push('/login')
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/wishlist/${productId}`, {
+        method: isWishlisted(productId) ? 'DELETE' : 'POST',
+      })
+
+      if (response.ok) {
+        setWishlistedProductIds(prev => 
+          isWishlisted(productId)
+            ? prev.filter(id => id !== productId)
+            : [...prev, productId]
+        )
+      }
+    } catch (error) {
+      console.error('위시리스트 토글 오류:', error)
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
         {/* 검색 헤더 */}
         <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <Link href="/" className="text-muted-foreground hover:text-foreground cursor-pointer">
-              <ChevronLeft className="h-4 w-4" />
+          <div className="flex items-center gap-4 mb-6">
+            <Link href="/" className="flex items-center text-gray-600 hover:text-gray-900">
+              <ChevronLeft className="w-5 h-5 mr-1" />
+              홈으로
             </Link>
-            <h1 className="text-2xl font-bold text-foreground">
-              검색 결과
-              {searchQuery && (
-                <span className="text-muted-foreground font-normal ml-2">
-                  "{searchQuery}"
-                </span>
-              )}
+            <h1 className="text-2xl font-bold text-gray-900">
+              {searchQuery ? `"${searchQuery}" 검색 결과` : '상품 검색'}
             </h1>
           </div>
+          
+          {/* 검색 입력 */}
+          <div className="max-w-2xl">
+            <SearchInput onSearch={handleSearch} initialValue={searchQuery} />
+          </div>
+        </div>
 
-          {/* 검색바 */}
-          <div className="max-w-2xl mb-4">
-            <SearchInput
-              placeholder="상품을 검색하세요..."
-              onSearch={handleSearch}
-              showSuggestions={true}
-            />
+        {/* 필터 및 정렬 */}
+        <div className="flex flex-col lg:flex-row gap-6 mb-8">
+          {/* 필터 버튼 */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              <Filter className="w-4 h-4" />
+              필터
+            </button>
+            
+            {/* 정렬 */}
+            <select
+              value={filters.sortBy}
+              onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="relevance">관련도순</option>
+              <option value="price_asc">가격 낮은순</option>
+              <option value="price_desc">가격 높은순</option>
+              <option value="newest">최신순</option>
+              <option value="rating">평점순</option>
+            </select>
           </div>
 
           {/* 검색 결과 통계 */}
           {stats && (
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>총 {stats.total}개의 상품</span>
-              <div className="flex items-center gap-4">
-                {/* 필터 버튼 */}
-                <button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 px-3 py-1 border rounded-md hover:bg-muted cursor-pointer"
-                >
-                  <Filter className="h-4 w-4" />
-                  필터
-                </button>
-
-                {/* 정렬 */}
-                <select
-                  value={filters.sortBy}
-                  onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                  className="px-3 py-1 border rounded-md bg-background cursor-pointer"
-                >
-                  {sortOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="text-gray-600">
+              총 {stats.total}개의 상품
             </div>
           )}
         </div>
 
         {/* 필터 패널 */}
         {showFilters && (
-          <div className="mb-8 p-6 border rounded-lg bg-muted/50">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium">필터</h3>
-              <button
-                onClick={() => setShowFilters(false)}
-                className="p-1 hover:bg-muted rounded cursor-pointer"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
+          <div className="bg-white p-6 rounded-lg shadow-sm border mb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* 카테고리 */}
               <div>
-                <label className="block text-sm font-medium mb-2">카테고리</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  카테고리
+                </label>
                 <select
                   value={filters.category}
                   onChange={(e) => handleFilterChange('category', e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md bg-background cursor-pointer"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  {categories.map((category) => (
-                    <option key={category.value} value={category.value}>
-                      {category.label}
-                    </option>
-                  ))}
+                  <option value="">전체</option>
+                  <option value="shirts">셔츠</option>
+                  <option value="pants">바지</option>
+                  <option value="outerwear">아우터</option>
+                  <option value="accessories">액세서리</option>
                 </select>
               </div>
 
               {/* 가격 범위 */}
               <div>
-                <label className="block text-sm font-medium mb-2">가격 범위</label>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    placeholder="최소"
-                    value={filters.minPrice}
-                    onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                    className="flex-1 px-3 py-2 border rounded-md bg-background"
-                  />
-                  <span className="flex items-center">~</span>
-                  <input
-                    type="number"
-                    placeholder="최대"
-                    value={filters.maxPrice}
-                    onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                    className="flex-1 px-3 py-2 border rounded-md bg-background"
-                  />
-                </div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  최소 가격
+                </label>
+                <input
+                  type="number"
+                  value={filters.minPrice}
+                  onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                  placeholder="0"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
 
-              {/* 필터 적용 버튼 */}
-              <div className="flex items-end gap-2">
-                <button
-                  onClick={applyFilters}
-                  className="flex-1 bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors cursor-pointer"
-                >
-                  적용
-                </button>
-                <button
-                  onClick={clearFilters}
-                  className="px-4 py-2 border rounded-md hover:bg-muted transition-colors cursor-pointer"
-                >
-                  초기화
-                </button>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  최대 가격
+                </label>
+                <input
+                  type="number"
+                  value={filters.maxPrice}
+                  onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                  placeholder="무제한"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
               </div>
+            </div>
+
+            <div className="flex gap-4 mt-6">
+              <button
+                onClick={applyFilters}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                필터 적용
+              </button>
+              <button
+                onClick={clearFilters}
+                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                필터 초기화
+              </button>
             </div>
           </div>
         )}
 
         {/* 검색 결과 */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <ProductCardSkeleton key={index} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
             ))}
           </div>
         ) : products.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                              {products.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    id={product.id}
-                    name={product.name}
-                    price={product.price}
-                    originalPrice={product.originalPrice}
-                    image={product.images[0]}
-                    category={product.category}
-                    isNew={product.isNew}
-                    isSale={product.isSale}
-                    rating={product.rating}
-                    reviewCount={product.reviewCount}
-                    isWishlisted={wishlistedProductIds.includes(product.id)}
-                  />
-                ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                  image={product.images[0]}
+                  category={product.category}
+                  isNew={product.isNew}
+                  isSale={product.isSale}
+                  rating={product.rating}
+                  reviewCount={product.reviewCount}
+                  isWishlisted={isWishlisted(product.id)}
+                />
+              ))}
             </div>
 
             {/* 페이지네이션 */}
             {stats && stats.totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex justify-center items-center gap-2 mt-12">
                 <button
                   onClick={() => handlePageChange(stats.page - 1)}
                   disabled={!stats.hasPrevPage}
-                  className="p-2 border rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="px-3 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
                 
-                <span className="px-4 py-2 text-sm">
-                  {stats.page} / {stats.totalPages}
-                </span>
+                {Array.from({ length: stats.totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-3 py-2 border rounded-lg ${
+                      page === stats.page
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
                 
                 <button
                   onClick={() => handlePageChange(stats.page + 1)}
                   disabled={!stats.hasNextPage}
-                  className="p-2 border rounded-md hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="px-3 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             )}
           </>
         ) : (
           <div className="text-center py-12">
-            <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">
+            <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
               검색 결과가 없습니다
             </h3>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-gray-600 mb-6">
               다른 검색어를 시도해보세요
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors cursor-pointer"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               전체 상품 보기
             </Link>
           </div>
         )}
       </main>
-
+      
       <Footer />
     </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">검색 페이지를 불러오는 중...</p>
+        </div>
+      </div>
+    }>
+      <SearchPageContent />
+    </Suspense>
   )
 } 

@@ -117,16 +117,19 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error('주문 생성 오류:', error)
+    const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'
+    const errorStack = error instanceof Error ? error.stack : undefined
+    const errorName = error instanceof Error ? error.name : 'UnknownError'
+    
     console.error('오류 상세:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
+      message: errorMessage,
+      stack: errorStack,
+      name: errorName
     })
     return NextResponse.json(
       { 
         error: '주문 생성에 실패했습니다.',
-        details: error.message,
-        stack: error.stack
+        details: errorMessage
       },
       { status: 500 }
     )

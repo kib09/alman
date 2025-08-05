@@ -26,7 +26,7 @@ export async function PUT(
     // 배송지가 해당 사용자의 것인지 확인
     const existingAddress = await prisma.address.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: decoded.userId
       }
     })
@@ -50,7 +50,7 @@ export async function PUT(
 
     const updatedAddress = await prisma.address.update({
       where: {
-        id: params.id
+        id: id
       },
       data: {
         name,
@@ -92,7 +92,7 @@ export async function DELETE(
     // 배송지가 해당 사용자의 것인지 확인
     const existingAddress = await prisma.address.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: decoded.userId
       }
     })
@@ -103,7 +103,7 @@ export async function DELETE(
 
     await prisma.address.delete({
       where: {
-        id: params.id
+        id: id
       }
     })
 

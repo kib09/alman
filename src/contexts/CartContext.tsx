@@ -7,6 +7,7 @@ interface CartContextType {
   cartCount: number
   updateCartCount: () => Promise<void>
   addToCart: (productId: string, quantity?: number, size?: string, color?: string) => Promise<boolean>
+  clearCart: () => Promise<void>
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -68,13 +69,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // 장바구니 비우기
+  const clearCart = async (): Promise<void> => {
+    if (!user) {
+      return
+    }
+
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        // 장바구니 개수 업데이트
+        await updateCartCount()
+      }
+    } catch (error) {
+      console.error('장바구니 비우기 오류:', error)
+    }
+  }
+
   // 사용자 로그인 상태 변경 시 장바구니 개수 업데이트
   useEffect(() => {
     updateCartCount()
   }, [user])
 
   return (
-    <CartContext.Provider value={{ cartCount, updateCartCount, addToCart }}>
+    <CartContext.Provider value={{ cartCount, updateCartCount, addToCart, clearCart }}>
       {children}
     </CartContext.Provider>
   )

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
@@ -8,7 +8,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react'
 
-export default function LoginPage() {
+function LoginPageContent() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -102,7 +102,7 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="appearance-none relative block w-full pl-10 pr-3 py-2 border border-input bg-background text-foreground placeholder-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="appearance-none relative block w-full px-3 py-2 pl-10 border border-input placeholder-muted-foreground text-foreground bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="이메일을 입력하세요"
                   />
                 </div>
@@ -124,7 +124,7 @@ export default function LoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="appearance-none relative block w-full pl-10 pr-10 py-2 border border-input bg-background text-foreground placeholder-muted-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                    className="appearance-none relative block w-full px-3 py-2 pl-10 pr-10 border border-input placeholder-muted-foreground text-foreground bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                     placeholder="비밀번호를 입력하세요"
                   />
                   <button
@@ -152,19 +152,36 @@ export default function LoginPage() {
               </button>
             </div>
 
-            <div className="text-center">
-              <Link
-                href="/forgot-password"
-                className="text-sm text-primary hover:text-primary/80"
-              >
-                비밀번호를 잊으셨나요?
-              </Link>
+            <div className="flex items-center justify-between">
+              <div className="text-sm">
+                <Link
+                  href="/forgot-password"
+                  className="font-medium text-primary hover:text-primary/80"
+                >
+                  비밀번호를 잊으셨나요?
+                </Link>
+              </div>
             </div>
           </form>
         </div>
       </main>
-
+      
       <Footer />
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">로그인 페이지를 불러오는 중...</p>
+        </div>
+      </div>
+    }>
+      <LoginPageContent />
+    </Suspense>
   )
 } 
