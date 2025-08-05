@@ -1,0 +1,89 @@
+'use client'
+
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { useAuth } from './AuthContext'
+
+interface CartContextType {
+  cartCount: number
+  updateCartCount: () => Promise<void>
+  addToCart: (productId: string, quantity?: number, size?: string, color?: string) => Promise<boolean>
+}
+
+const CartContext = createContext<CartContextType | undefined>(undefined)
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [cartCount, setCartCount] = useState(0)
+  const { user } = useAuth()
+
+  // 장바구니 개수 업데이트
+  const updateCartCount = async () => {
+    if (!user) {
+      setCartCount(0)
+      return
+    }
+
+    try {
+      const response = await fetch('/api/cart')
+      if (response.ok) {
+        const data = await response.json()
+        setCartCount(data.totalItems || 0)
+      } else {
+        setCartCount(0)
+      }
+    } catch (error) {
+      console.error('장바구니 개수 조회 오류:', error)
+      setCartCount(0)
+    }
+  }
+
+  // 장바구니에 상품 추가
+  const addToCart = async (productId: string, quantity: number = 1, size?: string, color?: string): Promise<boolean> => {
+    if (!user) {
+      return false
+    }
+
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          productId,
+          quantity,
+          size,
+          color
+        }),
+      })
+
+      if (response.ok) {
+        // 장바구니 개수 업데이트
+        await updateCartCount()
+        return true
+      }
+      return false
+    } catch (error) {
+      console.error('장바구니 추가 오류:', error)
+      return false
+    }
+  }
+
+  // 사용자 로그인 상태 변경 시 장바구니 개수 업데이트
+  useEffect(() => {
+    updateCartCount()
+  }, [user])
+
+  return (
+    <CartContext.Provider value={{ cartCount, updateCartCount, addToCart }}>
+      {children}
+    </CartContext.Provider>
+  )
+}
+
+export function useCart() {
+  const context = useContext(CartContext)
+  if (context === undefined) {
+    throw new Error('useCart must be used within a CartProvider')
+  }
+  return context
+} 
