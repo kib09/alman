@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   try {
     // 관리자 권한 확인
     const adminCheck = await verifyAdmin(request)
-    if (!adminCheck.success) {
+    if (!adminCheck) {
       return NextResponse.json(
         { error: '관리자 권한이 필요합니다.' },
         { status: 403 }
@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest) {
   try {
     // 관리자 권한 확인
     const adminCheck = await verifyAdmin(request)
-    if (!adminCheck.success) {
+    if (!adminCheck) {
       return NextResponse.json(
         { error: '관리자 권한이 필요합니다.' },
         { status: 403 }

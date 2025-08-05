@@ -30,7 +30,7 @@ export async function PUT(
     // 장바구니 아이템이 사용자의 것인지 확인
     const cartItem = await prisma.cartItem.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
       include: {
@@ -51,7 +51,7 @@ export async function PUT(
 
     // 수량 업데이트
     const updatedItem = await prisma.cartItem.update({
-      where: { id: params.id },
+      where: { id: id },
       data: { quantity },
       include: {
         product: {
@@ -104,7 +104,7 @@ export async function DELETE(
     // 장바구니 아이템이 사용자의 것인지 확인
     const cartItem = await prisma.cartItem.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     })
@@ -118,7 +118,7 @@ export async function DELETE(
 
     // 아이템 삭제
     await prisma.cartItem.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({
