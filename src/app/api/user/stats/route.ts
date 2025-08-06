@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const userId = authResult.userId
+    const userId = authResult.id
 
     // 사용자 통계 데이터 조회
     const [

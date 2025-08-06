@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const userId = authResult.userId
+    const userId = authResult.id
 
     // URL 파라미터 파싱
     const { searchParams } = new URL(request.url)

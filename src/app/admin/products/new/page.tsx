@@ -34,6 +34,13 @@ interface ProductForm {
   inStock: boolean
 }
 
+// 배열 필드 타입 가드
+type ArrayFields = 'images' | 'sizes' | 'colors' | 'details'
+
+const isArrayField = (field: keyof ProductForm): field is ArrayFields => {
+  return ['images', 'sizes', 'colors', 'details'].includes(field as string)
+}
+
 export default function NewProductPage() {
   const { user } = useAuth()
   const { showToast } = useToast()
@@ -85,23 +92,29 @@ export default function NewProductPage() {
   }
 
   const handleArrayChange = (field: keyof ProductForm, index: number, value: string) => {
+    if (!isArrayField(field)) return
+    
     setForm(prev => ({
       ...prev,
-      [field]: prev[field].map((item, i) => i === index ? value : item)
+      [field]: (prev[field] as string[]).map((item, i) => i === index ? value : item)
     }))
   }
 
   const addArrayItem = (field: keyof ProductForm) => {
+    if (!isArrayField(field)) return
+    
     setForm(prev => ({
       ...prev,
-      [field]: [...prev[field], '']
+      [field]: [...(prev[field] as string[]), '']
     }))
   }
 
   const removeArrayItem = (field: keyof ProductForm, index: number) => {
+    if (!isArrayField(field)) return
+    
     setForm(prev => ({
       ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
+      [field]: (prev[field] as string[]).filter((_, i) => i !== index)
     }))
   }
 
