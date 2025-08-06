@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import ConfirmModal from '@/components/ui/ConfirmModal'
 import { 
   Package, 
   Search, 
@@ -46,6 +47,8 @@ export default function AdminProductsPage() {
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null)
 
   useEffect(() => {
     if (user) {
@@ -70,21 +73,28 @@ export default function AdminProductsPage() {
     }
   }
 
-  const deleteProduct = async (productId: string) => {
-    if (!confirm('정말로 이 상품을 삭제하시겠습니까?')) {
-      return
-    }
+  const handleDeleteClick = (product: Product) => {
+    setProductToDelete(product)
+    setShowDeleteModal(true)
+  }
+
+  const deleteProduct = async () => {
+    if (!productToDelete) return
 
     try {
-      const response = await fetch(`/api/admin/products/${productId}`, {
+      const response = await fetch(`/api/admin/products/${productToDelete.id}`, {
         method: 'DELETE',
       })
 
       if (response.ok) {
         showToast('상품이 삭제되었습니다.', 'success')
         fetchProducts() // 목록 새로고침
+        setShowDeleteModal(false)
+        setProductToDelete(null)
       } else {
-        showToast('상품 삭제에 실패했습니다.', 'error')
+        const errorData = await response.json()
+        console.error('삭제 실패 상세:', errorData)
+        showToast(`상품 삭제에 실패했습니다: ${errorData.details || errorData.error}`, 'error')
       }
     } catch (error) {
       console.error('상품 삭제 오류:', error)
@@ -140,10 +150,24 @@ export default function AdminProductsPage() {
             <p>상품 데이터를 불러오는 중...</p>
           </div>
         </main>
-        <Footer />
-      </div>
-    )
-  }
+              <Footer />
+
+      {/* 삭제 확인 모달 */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false)
+          setProductToDelete(null)
+        }}
+        onConfirm={deleteProduct}
+        title="상품 삭제 확인"
+        message={`정말로 "${productToDelete?.name}" 상품을 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며, 관련된 모든 데이터(주문, 리뷰, 장바구니 등)도 함께 삭제됩니다.`}
+        confirmText="삭제"
+        cancelText="취소"
+      />
+    </div>
+  )
+}
 
   return (
     <div className="min-h-screen bg-background">
@@ -277,7 +301,7 @@ export default function AdminProductsPage() {
                       수정
                     </button>
                     <button
-                      onClick={() => deleteProduct(product.id)}
+                      onClick={() => handleDeleteClick(product)}
                       className="flex-1 bg-red-500 text-white py-2 px-3 rounded-md hover:bg-red-600 transition-colors flex items-center justify-center gap-1"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -323,6 +347,20 @@ export default function AdminProductsPage() {
       </main>
 
       <Footer />
+
+      {/* 삭제 확인 모달 */}
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false)
+          setProductToDelete(null)
+        }}
+        onConfirm={deleteProduct}
+        title="상품 삭제 확인"
+        message={`정말로 "${productToDelete?.name}" 상품을 삭제하시겠습니까? 이 작업은 되돌릴 수 없으며, 관련된 모든 데이터(주문, 리뷰, 장바구니 등)도 함께 삭제됩니다.`}
+        confirmText="삭제"
+        cancelText="취소"
+      />
     </div>
   )
 } 

@@ -16,6 +16,27 @@ interface UserStats {
   wishlistItems: number
 }
 
+interface OrderItem {
+  id: string
+  quantity: number
+  price: number
+  product: {
+    id: string
+    name: string
+    images: string
+    price: number
+  }
+}
+
+interface RecentOrder {
+  id: string
+  orderNumber: string
+  status: string
+  totalAmount: number
+  createdAt: string
+  orderItems: OrderItem[]
+}
+
 export default function AccountOverviewPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
@@ -26,6 +47,8 @@ export default function AccountOverviewPage() {
     totalSpent: 0,
     wishlistItems: 0
   })
+  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([])
+  const [loadingOrders, setLoadingOrders] = useState(false)
 
   // 로그인 상태 확인
   useEffect(() => {
@@ -37,26 +60,46 @@ export default function AccountOverviewPage() {
   useEffect(() => {
     if (user) {
       fetchUserStats()
+      fetchRecentOrders()
     }
   }, [user])
 
   const fetchUserStats = async () => {
     try {
-      // 실제 API 호출로 대체 예정
-      // const response = await fetch('/api/user/stats')
-      // const data = await response.json()
-      // setStats(data)
-      
-      // 임시 데이터
-      setStats({
-        totalOrders: 12,
-        totalReviews: 8,
-        pendingDeliveries: 2,
-        totalSpent: 1250000,
-        wishlistItems: 15
-      })
+      const response = await fetch('/api/user/stats')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.stats) {
+          setStats(data.stats)
+        } else {
+          console.error('통계 데이터 형식 오류:', data)
+        }
+      } else {
+        console.error('통계 조회 실패:', response.status)
+      }
     } catch (error) {
       console.error('사용자 통계 조회 오류:', error)
+    }
+  }
+
+  const fetchRecentOrders = async () => {
+    setLoadingOrders(true)
+    try {
+      const response = await fetch('/api/user/recent-orders?limit=5')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.orders) {
+          setRecentOrders(data.orders)
+        } else {
+          console.error('주문 데이터 형식 오류:', data)
+        }
+      } else {
+        console.error('최근 주문 조회 실패:', response.status)
+      }
+    } catch (error) {
+      console.error('최근 주문 조회 오류:', error)
+    } finally {
+      setLoadingOrders(false)
     }
   }
 
@@ -86,6 +129,36 @@ export default function AccountOverviewPage() {
       month: 'long',
       day: 'numeric'
     })
+  }
+
+  const getOrderStatusText = (status: string) => {
+    switch (status) {
+      case '주문확인':
+        return '주문 확인'
+      case '배송중':
+        return '배송 중'
+      case '배송완료':
+        return '배송 완료'
+      case '취소':
+        return '주문 취소'
+      default:
+        return status
+    }
+  }
+
+  const getOrderStatusColor = (status: string) => {
+    switch (status) {
+      case '주문확인':
+        return 'text-yellow-600 bg-yellow-100'
+      case '배송중':
+        return 'text-purple-600 bg-purple-100'
+      case '배송완료':
+        return 'text-green-600 bg-green-100'
+      case '취소':
+        return 'text-red-600 bg-red-100'
+      default:
+        return 'text-gray-600 bg-gray-100'
+    }
   }
 
   return (
@@ -228,22 +301,35 @@ export default function AccountOverviewPage() {
                     </Link>
                   </div>
                   <div className="space-y-3">
-                    <div className="flex items-center gap-3 p-3 bg-background rounded-lg">
-                      <Package className="h-5 w-5 text-muted-foreground" />
-                      <div className="flex-1">
-                        <p className="font-medium">ORD-001</p>
-                        <p className="text-sm text-muted-foreground">2024-01-15</p>
+                    {loadingOrders ? (
+                      <div className="text-center py-4">
+                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2"></div>
+                        <p className="text-sm text-muted-foreground">주문 정보를 불러오는 중...</p>
                       </div>
-                      <span className="text-sm text-green-600">배송 완료</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 bg-background rounded-lg">
-                      <Package className="h-5 w-5 text-muted-foreground" />
-                      <div className="flex-1">
-                        <p className="font-medium">ORD-002</p>
-                        <p className="text-sm text-muted-foreground">2024-01-10</p>
+                    ) : recentOrders.length > 0 ? (
+                      recentOrders.map((order) => (
+                        <div key={order.id} className="flex items-center gap-3 p-3 bg-background rounded-lg">
+                          <Package className="h-5 w-5 text-muted-foreground" />
+                          <div className="flex-1">
+                            <p className="font-medium">{order.orderNumber}</p>
+                                                         <p className="text-sm text-muted-foreground">
+                               {formatDate(order.createdAt)} • ₩{(order.totalAmount || 0).toLocaleString()}
+                             </p>
+                            <p className="text-xs text-muted-foreground">
+                              {order.orderItems.length}개 상품
+                            </p>
+                          </div>
+                          <span className={`text-sm px-2 py-1 rounded-full ${getOrderStatusColor(order.status)}`}>
+                            {getOrderStatusText(order.status)}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-4">
+                        <Package className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">주문 내역이 없습니다</p>
                       </div>
-                      <span className="text-sm text-blue-600">배송 중</span>
-                    </div>
+                    )}
                   </div>
                 </div>
 

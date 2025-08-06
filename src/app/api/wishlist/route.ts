@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// 위시리스트에 상품 추가
+// 위시리스트에 상품 추가/제거 (토글)
 export async function POST(request: NextRequest) {
   try {
     const token = request.cookies.get('token')?.value
@@ -104,36 +104,45 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingItem) {
-      return NextResponse.json(
-        { error: '이미 위시리스트에 추가된 상품입니다.' },
-        { status: 400 }
-      )
-    }
+      // 이미 위시리스트에 있으면 제거
+      await prisma.wishlistItem.delete({
+        where: {
+          id: existingItem.id,
+        },
+      })
 
-    // 위시리스트에 추가
-    const wishlistItem = await prisma.wishlistItem.create({
-      data: {
-        userId: decoded.userId,
-        productId: productId,
-      },
-      include: {
-        product: {
-          include: {
-            category: true,
+      return NextResponse.json({
+        success: true,
+        message: '위시리스트에서 제거되었습니다.',
+        action: 'removed',
+      })
+    } else {
+      // 위시리스트에 없으면 추가
+      const wishlistItem = await prisma.wishlistItem.create({
+        data: {
+          userId: decoded.userId,
+          productId: productId,
+        },
+        include: {
+          product: {
+            include: {
+              category: true,
+            },
           },
         },
-      },
-    })
+      })
 
-    return NextResponse.json({
-      success: true,
-      message: '위시리스트에 추가되었습니다.',
-      wishlistItem,
-    })
+      return NextResponse.json({
+        success: true,
+        message: '위시리스트에 추가되었습니다.',
+        action: 'added',
+        wishlistItem,
+      })
+    }
   } catch (error) {
-    console.error('위시리스트 추가 오류:', error)
+    console.error('위시리스트 토글 오류:', error)
     return NextResponse.json(
-      { error: '위시리스트 추가에 실패했습니다.' },
+      { error: '위시리스트 작업에 실패했습니다.' },
       { status: 500 }
     )
   }

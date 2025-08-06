@@ -10,6 +10,7 @@ interface LoginModalProps {
   onConfirm: () => void
   title?: string
   message?: string
+  redirect?: string
 }
 
 export default function LoginModal({
@@ -17,9 +18,12 @@ export default function LoginModal({
   onClose,
   onConfirm,
   title = '로그인이 필요합니다',
-  message = '이 기능을 사용하려면 로그인이 필요합니다. 로그인하시겠습니까?'
+  message = '이 기능을 사용하려면 로그인이 필요합니다. 로그인하시겠습니까?',
+  redirect
 }: LoginModalProps) {
   if (!isOpen) return null
+
+  const loginUrl = redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : '/login'
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -57,7 +61,7 @@ export default function LoginModal({
             취소
           </button>
           <Link
-            href="/login"
+            href={loginUrl}
             className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-center"
             onClick={() => {
               onConfirm()

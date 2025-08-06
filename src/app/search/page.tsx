@@ -101,7 +101,7 @@ function SearchPageContent() {
         setStats(data.stats)
         
         // 위시리스트 상태 확인
-        if (data.products.length > 0) {
+        if (data.products.length > 0 && user) {
           const productIds = data.products.map((p: Product) => p.id)
           checkWishlistStatus(productIds)
         }
@@ -154,17 +154,16 @@ function SearchPageContent() {
     if (!user) return
 
     try {
-      const response = await fetch('/api/wishlist/check', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productIds }),
+      const params = new URLSearchParams({
+        productIds: productIds.join(',')
       })
+      
+      const response = await fetch(`/api/wishlist/check?${params}`)
 
       if (response.ok) {
         const data = await response.json()
-        setWishlistedProductIds(data.wishlistedIds || [])
+        console.log('위시리스트 상태 확인 결과:', data)
+        setWishlistedProductIds(data.wishlistedProductIds || [])
       }
     } catch (error) {
       console.error('위시리스트 상태 확인 오류:', error)
@@ -172,12 +171,16 @@ function SearchPageContent() {
   }
 
   const isWishlisted = (productId: string) => {
-    return wishlistedProductIds.includes(productId)
+    const result = wishlistedProductIds.includes(productId)
+    console.log(`상품 ${productId} 위시리스트 상태:`, result)
+    return result
   }
 
   const toggleWishlist = async (productId: string) => {
     if (!user) {
-      router.push('/login')
+      // 현재 페이지 URL을 redirect 파라미터로 전달하여 로그인 페이지로 이동
+      const currentUrl = typeof window !== 'undefined' ? window.location.href : '/';
+      window.location.href = `/login?redirect=${encodeURIComponent(currentUrl)}`;
       return
     }
 
@@ -199,18 +202,18 @@ function SearchPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
         {/* 검색 헤더 */}
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-6">
-            <Link href="/" className="flex items-center text-gray-600 hover:text-gray-900">
+            <Link href="/" className="flex items-center text-muted-foreground hover:text-foreground">
               <ChevronLeft className="w-5 h-5 mr-1" />
               홈으로
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-2xl font-bold text-foreground">
               {searchQuery ? `"${searchQuery}" 검색 결과` : '상품 검색'}
             </h1>
           </div>
@@ -227,7 +230,7 @@ function SearchPageContent() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors"
             >
               <Filter className="w-4 h-4" />
               필터
@@ -237,7 +240,7 @@ function SearchPageContent() {
             <select
               value={filters.sortBy}
               onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
             >
               <option value="relevance">관련도순</option>
               <option value="price_asc">가격 낮은순</option>
@@ -249,7 +252,7 @@ function SearchPageContent() {
 
           {/* 검색 결과 통계 */}
           {stats && (
-            <div className="text-gray-600">
+            <div className="text-muted-foreground">
               총 {stats.total}개의 상품
             </div>
           )}
@@ -257,29 +260,30 @@ function SearchPageContent() {
 
         {/* 필터 패널 */}
         {showFilters && (
-          <div className="bg-white p-6 rounded-lg shadow-sm border mb-6">
+          <div className="bg-background border border-border p-6 rounded-lg shadow-sm mb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* 카테고리 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   카테고리
                 </label>
                 <select
                   value={filters.category}
                   onChange={(e) => handleFilterChange('category', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                 >
                   <option value="">전체</option>
-                  <option value="shirts">셔츠</option>
-                  <option value="pants">바지</option>
-                  <option value="outerwear">아우터</option>
+                  <option value="suits">정장</option>
+                  <option value="casual">캐주얼</option>
+                  <option value="shoes">신발</option>
                   <option value="accessories">액세서리</option>
+                  <option value="sportswear">스포츠웨어</option>
                 </select>
               </div>
 
               {/* 가격 범위 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   최소 가격
                 </label>
                 <input
@@ -287,12 +291,12 @@ function SearchPageContent() {
                   value={filters.minPrice}
                   onChange={(e) => handleFilterChange('minPrice', e.target.value)}
                   placeholder="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   최대 가격
                 </label>
                 <input
@@ -300,7 +304,7 @@ function SearchPageContent() {
                   value={filters.maxPrice}
                   onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
                   placeholder="무제한"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background"
                 />
               </div>
             </div>
@@ -308,13 +312,13 @@ function SearchPageContent() {
             <div className="flex gap-4 mt-6">
               <button
                 onClick={applyFilters}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 필터 적용
               </button>
               <button
                 onClick={clearFilters}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                className="px-6 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors"
               >
                 필터 초기화
               </button>
@@ -356,7 +360,7 @@ function SearchPageContent() {
                 <button
                   onClick={() => handlePageChange(stats.page - 1)}
                   disabled={!stats.hasPrevPage}
-                  className="px-3 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-3 py-2 border border-border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -365,10 +369,10 @@ function SearchPageContent() {
                   <button
                     key={page}
                     onClick={() => handlePageChange(page)}
-                    className={`px-3 py-2 border rounded-lg ${
+                    className={`px-3 py-2 border rounded-lg transition-colors ${
                       page === stats.page
-                        ? 'bg-blue-600 text-white border-blue-600'
-                        : 'border-gray-300 hover:bg-gray-50'
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'border-border hover:bg-muted'
                     }`}
                   >
                     {page}
@@ -378,7 +382,7 @@ function SearchPageContent() {
                 <button
                   onClick={() => handlePageChange(stats.page + 1)}
                   disabled={!stats.hasNextPage}
-                  className="px-3 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  className="px-3 py-2 border border-border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-muted transition-colors"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -387,16 +391,16 @@ function SearchPageContent() {
           </>
         ) : (
           <div className="text-center py-12">
-            <Search className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <Search className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">
               검색 결과가 없습니다
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               다른 검색어를 시도해보세요
             </p>
             <Link
               href="/products"
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
             >
               전체 상품 보기
             </Link>
@@ -412,10 +416,10 @@ function SearchPageContent() {
 export default function SearchPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">검색 페이지를 불러오는 중...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">검색 페이지를 불러오는 중...</p>
         </div>
       </div>
     }>

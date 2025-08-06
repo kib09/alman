@@ -97,9 +97,32 @@ export async function DELETE(
       )
     }
 
-    // 상품 삭제
-    await prisma.product.delete({
-      where: { id }
+    // 트랜잭션을 사용하여 관련 데이터를 모두 삭제
+    await prisma.$transaction(async (tx) => {
+      // 1. 관련된 리뷰 삭제
+      await tx.review.deleteMany({
+        where: { productId: id }
+      })
+
+      // 2. 관련된 장바구니 아이템 삭제
+      await tx.cartItem.deleteMany({
+        where: { productId: id }
+      })
+
+      // 3. 관련된 위시리스트 아이템 삭제
+      await tx.wishlistItem.deleteMany({
+        where: { productId: id }
+      })
+
+      // 4. 관련된 주문 아이템 삭제
+      await tx.orderItem.deleteMany({
+        where: { productId: id }
+      })
+
+      // 5. 마지막으로 상품 삭제
+      await tx.product.delete({
+        where: { id }
+      })
     })
 
     return NextResponse.json({
@@ -109,7 +132,10 @@ export async function DELETE(
   } catch (error) {
     console.error('상품 삭제 오류:', error)
     return NextResponse.json(
-      { error: '상품 삭제에 실패했습니다.' },
+      { 
+        error: '상품 삭제에 실패했습니다.',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

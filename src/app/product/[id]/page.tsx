@@ -14,6 +14,8 @@ import Footer from '@/components/layout/Footer'
 import ProductCard from '@/components/product/ProductCard'
 import { ProductCardSkeleton } from '@/components/ui/ProductCardSkeleton'
 import { ProductDetailSkeleton } from '@/components/ui/ProductDetailSkeleton'
+import ConfirmModal from '@/components/ui/ConfirmModal'
+import ShareModal from '@/components/ui/ShareModal'
 
 interface Product {
   id: string
@@ -70,7 +72,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [quantity, setQuantity] = useState(1)
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
   const [activeTab, setActiveTab] = useState<'description' | 'details' | 'reviews'>('description')
+  const [currentUrl, setCurrentUrl] = useState('')
   const { user } = useAuth()
   const { showToast } = useToast()
 
@@ -106,6 +111,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
     fetchProduct()
   }, [id])
+
+  // 현재 URL 설정
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentUrl(window.location.href)
+    }
+  }, [])
 
   if (loading) {
     return (
@@ -217,6 +229,17 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       return
     }
 
+    // 이미 위시리스트에 있는 경우 확인 모달 표시
+    if (isWishlisted) {
+      setShowConfirmModal(true)
+      return
+    }
+
+    // 위시리스트에 추가
+    await toggleWishlist()
+  }
+
+  const toggleWishlist = async () => {
     try {
       const response = await fetch('/api/wishlist', {
         method: 'POST',
@@ -229,19 +252,19 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       const data = await response.json()
 
       if (response.ok) {
-        setIsWishlisted(true)
-        showToast('위시리스트에 추가되었습니다!', 'success')
-      } else {
-        if (data.error === '이미 위시리스트에 추가된 상품입니다.') {
+        if (data.action === 'added') {
           setIsWishlisted(true)
-          showToast('이미 위시리스트에 추가된 상품입니다.', 'info')
-        } else {
-          showToast(data.error || '위시리스트 추가에 실패했습니다.', 'error')
+          showToast('위시리스트에 추가되었습니다!', 'success')
+        } else if (data.action === 'removed') {
+          setIsWishlisted(false)
+          showToast('위시리스트에서 제거되었습니다.', 'success')
         }
+      } else {
+        showToast(data.error || '위시리스트 작업에 실패했습니다.', 'error')
       }
     } catch (error) {
-      console.error('위시리스트 추가 오류:', error)
-      showToast('위시리스트 추가에 실패했습니다.', 'error')
+      console.error('위시리스트 토글 오류:', error)
+      showToast('위시리스트 작업에 실패했습니다.', 'error')
     }
   }
 
@@ -297,7 +320,11 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
                   </div>
 
                   {/* 공유 버튼 */}
-                  <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full hover:bg-white transition-colors cursor-pointer">
+                  <button 
+                    onClick={() => setShowShareModal(true)}
+                    className="absolute top-4 right-4 p-2 bg-white/80 rounded-full hover:bg-white transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md"
+                    title="공유하기"
+                  >
                     <Share2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -658,6 +685,27 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
             }}
             title="로그인이 필요합니다"
             message="위시리스트에 상품을 추가하려면 로그인이 필요합니다. 로그인하시겠습니까?"
+            redirect={currentUrl}
+          />
+
+          {/* 위시리스트 제거 확인 모달 */}
+          <ConfirmModal
+            isOpen={showConfirmModal}
+            onClose={() => setShowConfirmModal(false)}
+            onConfirm={toggleWishlist}
+            title="위시리스트 제거"
+            message="이 상품을 위시리스트에서 제거하시겠습니까?"
+            confirmText="제거"
+            cancelText="취소"
+          />
+
+          {/* 공유 모달 */}
+          <ShareModal
+            isOpen={showShareModal}
+            onClose={() => setShowShareModal(false)}
+            productName={product?.name || ''}
+            productUrl={currentUrl}
+            productImage={product?.images[0]}
           />
         </>
       ) : null}

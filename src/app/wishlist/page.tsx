@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import ConfirmModal from '@/components/ui/ConfirmModal'
 
 interface WishlistItem {
   id: string
@@ -30,6 +31,8 @@ interface WishlistItem {
 export default function WishlistPage() {
   const [items, setItems] = useState<WishlistItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [itemToRemove, setItemToRemove] = useState<string | null>(null)
   const { user } = useAuth()
   const { showToast } = useToast()
   const router = useRouter()
@@ -63,15 +66,22 @@ export default function WishlistPage() {
   }
 
   const removeFromWishlist = async (id: string) => {
+    setItemToRemove(id)
+    setShowConfirmModal(true)
+  }
+
+  const confirmRemoveFromWishlist = async () => {
+    if (!itemToRemove) return
+
     try {
-      const response = await fetch(`/api/wishlist/${id}`, {
+      const response = await fetch(`/api/wishlist/${itemToRemove}`, {
         method: 'DELETE',
       })
 
       const data = await response.json()
 
       if (response.ok) {
-        setItems(items.filter(item => item.id !== id))
+        setItems(items.filter(item => item.id !== itemToRemove))
         showToast('위시리스트에서 삭제되었습니다.', 'success')
       } else {
         showToast(data.error || '삭제에 실패했습니다.', 'error')
@@ -79,6 +89,8 @@ export default function WishlistPage() {
     } catch (error) {
       console.error('위시리스트 삭제 오류:', error)
       showToast('삭제에 실패했습니다.', 'error')
+    } finally {
+      setItemToRemove(null)
     }
   }
 
@@ -217,6 +229,20 @@ export default function WishlistPage() {
       </main>
 
       <Footer />
+
+      {/* 위시리스트 제거 확인 모달 */}
+      <ConfirmModal
+        isOpen={showConfirmModal}
+        onClose={() => {
+          setShowConfirmModal(false)
+          setItemToRemove(null)
+        }}
+        onConfirm={confirmRemoveFromWishlist}
+        title="위시리스트 제거"
+        message="이 상품을 위시리스트에서 제거하시겠습니까?"
+        confirmText="제거"
+        cancelText="취소"
+      />
     </div>
   )
 } 

@@ -2,6 +2,12 @@
 
 Next.js 15와 Prisma를 사용한 현대적인 남성 패션 쇼핑몰 웹 애플리케이션입니다.
 
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com)
+[![Next.js](https://img.shields.io/badge/Next.js-15.4.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-6.12.0-2D3748?style=for-the-badge&logo=prisma)](https://prisma.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+
 ## 🚀 주요 기능
 
 ### 👤 사용자 기능
@@ -36,29 +42,30 @@ Next.js 15와 Prisma를 사용한 현대적인 남성 패션 쇼핑몰 웹 애�
 ## 🛠️ 기술 스택
 
 ### Frontend
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS 4
-- **UI Components**: Headless UI
-- **Icons**: Lucide React
-- **Animations**: Framer Motion
+- **Framework**: Next.js 15.4.4 (App Router)
+- **Language**: TypeScript 5.0
+- **Styling**: Tailwind CSS 4.0
+- **UI Components**: Headless UI 2.2.6
+- **Icons**: Lucide React 0.525.0
+- **Animations**: Framer Motion 12.23.9
 
 ### Backend
-- **Runtime**: Node.js
+- **Runtime**: Node.js 20
 - **API**: Next.js API Routes
-- **Authentication**: JWT (jsonwebtoken)
-- **Password Hashing**: bcrypt
+- **Authentication**: JWT (jsonwebtoken 9.0.2)
+- **Password Hashing**: bcrypt 6.0.0
 
 ### Database
-- **Database**: MongoDB
-- **ORM**: Prisma 6
+- **Database**: MongoDB 6.18.0
+- **ORM**: Prisma 6.12.0
 - **Connection**: MongoDB Atlas (권장)
 
 ### Development Tools
 - **Package Manager**: npm
-- **Linting**: ESLint
-- **Type Checking**: TypeScript
-- **Build Tool**: Turbopack
+- **Linting**: ESLint 9
+- **Type Checking**: TypeScript 5.0
+- **Build Tool**: Turbopack (Next.js 15)
+- **Script Runner**: tsx 4.20.3
 
 ## 📦 설치 및 실행
 
@@ -143,17 +150,22 @@ alman/
 │   ├── seed-data.ts           # 원본 상품 데이터
 │   └── seed.ts                # 레거시 시드 스크립트
 ├── scripts/
+│   ├── fix-product-data.ts    # 상품 데이터 수정 스크립트
+│   ├── migrate-user-addresses.ts # 사용자 주소 마이그레이션
+│   ├── test-login.ts          # 로그인 테스트 스크립트
+│   ├── test-order.ts          # 주문 테스트 스크립트
 │   ├── update-images-demo.ts  # 데모 이미지 업데이트
-│   ├── update-product-images.ts # API 기반 이미지 업데이트
-│   └── test-login.ts          # 로그인 테스트 스크립트
+│   └── update-product-images.ts # API 기반 이미지 업데이트
 ├── src/
 │   ├── app/                   # Next.js 15 App Router
 │   │   ├── account/           # 사용자 계정 페이지
 │   │   │   ├── addresses/     # 주소 관리
 │   │   │   ├── orders/        # 주문 내역
-│   │   │   └── overview/      # 계정 개요
+│   │   │   ├── overview/      # 계정 개요
+│   │   │   └── page.tsx       # 계정 메인
 │   │   ├── admin/             # 관리자 페이지
 │   │   │   ├── orders/        # 주문 관리
+│   │   │   ├── page.tsx       # 관리자 대시보드
 │   │   │   ├── products/      # 상품 관리
 │   │   │   │   ├── [id]/      # 상품 수정
 │   │   │   │   │   └── edit/
@@ -164,7 +176,9 @@ alman/
 │   │   ├── api/               # API 라우트
 │   │   │   ├── admin/         # 관리자 API
 │   │   │   │   ├── orders/    # 주문 관리 API
+│   │   │   │   │   └── [id]/  # 개별 주문 관리
 │   │   │   │   ├── products/  # 상품 관리 API
+│   │   │   │   │   └── [id]/  # 개별 상품 관리
 │   │   │   │   ├── settings/  # 설정 관리 API
 │   │   │   │   ├── stats/     # 통계 API
 │   │   │   │   ├── users/     # 사용자 관리 API
@@ -175,14 +189,29 @@ alman/
 │   │   │   │   ├── me/        # 사용자 정보 API
 │   │   │   │   └── register/  # 회원가입 API
 │   │   │   ├── cart/          # 장바구니 API
+│   │   │   │   └── [id]/      # 개별 장바구니 아이템
 │   │   │   ├── categories/    # 카테고리 API
 │   │   │   ├── orders/        # 주문 API
+│   │   │   │   └── [id]/      # 개별 주문
 │   │   │   ├── products/      # 상품 API
+│   │   │   │   └── [id]/      # 개별 상품
 │   │   │   ├── search/        # 검색 API
 │   │   │   │   └── suggestions/ # 검색 제안 API
 │   │   │   ├── test/          # 테스트 API
-│   │   │   ├── users/         # 사용자 API
+│   │   │   ├── test-db/       # 데이터베이스 테스트
+│   │   │   ├── test-order/    # 주문 테스트
+│   │   │   ├── test-prisma/   # Prisma 테스트
+│   │   │   ├── test-user/     # 사용자 테스트
+│   │   │   ├── user/          # 사용자 API
+│   │   │   │   └── addresses/ # 주소 관리 API
+│   │   │   │       └── [id]/  # 개별 주소
+│   │   │   │           └── default/ # 기본 주소 설정
+│   │   │   ├── users/         # 사용자 관리 API
 │   │   │   └── wishlist/      # 위시리스트 API
+│   │   │       ├── [id]/      # 개별 위시리스트 아이템
+│   │   │       ├── check/     # 위시리스트 확인
+│   │   │       └── product/   # 상품별 위시리스트
+│   │   │           └── [productId]/
 │   │   ├── cart/              # 장바구니 페이지
 │   │   ├── category/          # 카테고리 페이지
 │   │   │   └── [category]/    # 카테고리별 상품
@@ -203,6 +232,7 @@ alman/
 │   │   ├── privacy/           # 개인정보처리방침
 │   │   ├── return-exchange/   # 반품/교환 정책
 │   │   ├── wishlist/          # 위시리스트 페이지
+│   │   ├── favicon.ico        # 파비콘
 │   │   ├── globals.css        # 전역 스타일
 │   │   ├── layout.tsx         # 루트 레이아웃
 │   │   └── page.tsx           # 메인 페이지
@@ -213,6 +243,8 @@ alman/
 │   │   ├── product/           # 상품 관련 컴포넌트
 │   │   │   └── ProductCard.tsx # 상품 카드 컴포넌트
 │   │   └── ui/                # UI 컴포넌트
+│   │       ├── AddressInput.tsx # 주소 입력 컴포넌트
+│   │       ├── AddressSelector.tsx # 주소 선택 컴포넌트
 │   │       ├── CategoryCardSkeleton.tsx # 카테고리 스켈레톤
 │   │       ├── LoginModal.tsx # 로그인 모달
 │   │       ├── ProductCardSkeleton.tsx # 상품 카드 스켈레톤
@@ -235,10 +267,15 @@ alman/
 │   ├── vercel.svg             # Vercel 로고
 │   └── window.svg             # 윈도우 아이콘
 ├── eslint.config.mjs          # ESLint 설정
+├── netlify.toml               # Netlify 배포 설정
 ├── next.config.ts             # Next.js 설정
 ├── package.json               # 프로젝트 설정
 ├── postcss.config.mjs         # PostCSS 설정
+├── prisma/                    # Prisma 설정 및 스크립트
+├── scripts/                   # 유틸리티 스크립트
+├── src/                       # 소스 코드
 ├── tsconfig.json              # TypeScript 설정
+├── vercel.json                # Vercel 배포 설정
 └── README.md                  # 프로젝트 문서
 ```
 
@@ -312,17 +349,35 @@ npx prisma studio
 
 ## 🚀 배포
 
-### Vercel 배포 (권장)
-1. GitHub에 코드 푸시
-2. Vercel에서 프로젝트 연결
-3. 환경 변수 설정
-4. 자동 배포 완료
+### Vercel 배포 (현재 배포됨)
+이 프로젝트는 현재 Vercel에 배포되어 있습니다.
 
-### 환경 변수 설정
+#### 배포 설정
+- **Framework**: Next.js
+- **Build Command**: `npm run build`
+- **Install Command**: `npm install`
+- **Output Directory**: `.next`
+- **Node Version**: 20.x
+
+#### 환경 변수 설정
+Vercel 대시보드에서 다음 환경 변수를 설정하세요:
 ```env
 DATABASE_URL="your-production-mongodb-url"
 JWT_SECRET="your-production-jwt-secret"
 ```
+
+### Netlify 배포 (대안)
+프로젝트에는 `netlify.toml` 설정 파일이 포함되어 있어 Netlify 배포도 지원합니다.
+
+## 🧪 테스트 API
+
+프로젝트에는 다양한 테스트 API 엔드포인트가 포함되어 있습니다:
+
+- `/api/test` - 기본 테스트
+- `/api/test-db` - 데이터베이스 연결 테스트
+- `/api/test-prisma` - Prisma 클라이언트 테스트
+- `/api/test-user` - 사용자 관련 테스트
+- `/api/test-order` - 주문 관련 테스트
 
 ## 🤝 기여하기
 
@@ -347,3 +402,4 @@ JWT_SECRET="your-production-jwt-secret"
 - [Tailwind CSS](https://tailwindcss.com/) - CSS 프레임워크
 - [Unsplash](https://unsplash.com/) - 고품질 이미지 제공
 - [Lucide](https://lucide.dev/) - 아이콘 라이브러리
+- [Vercel](https://vercel.com/) - 배포 플랫폼

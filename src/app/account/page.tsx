@@ -11,10 +11,15 @@ import { User, Package, MapPin, Star, Settings, LogOut, ChevronRight, CheckCircl
 export default function AccountPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
-  // 로그인 상태 확인
+  
+  // 로그인 상태 확인 및 overview로 리다이렉트
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login?redirect=/account')
+    if (!loading) {
+      if (!user) {
+        router.push('/login?redirect=/account/overview')
+      } else {
+        router.push('/account/overview')
+      }
     }
   }, [user, loading, router])
 
