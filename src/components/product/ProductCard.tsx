@@ -164,16 +164,8 @@ const ProductCard = ({
             <Heart className={`h-4 w-4 ${isWishlisted ? 'fill-current' : ''}`} />
           </button>
 
-          {/* 장바구니 버튼 (호버 시 표시) */}
-          {isHovered && (
-            <button
-              onClick={handleAddToCart}
-              disabled={isAddingToCart}
-              className="absolute bottom-2 right-2 p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all duration-200 cursor-pointer disabled:opacity-50"
-            >
-              <ShoppingBag className="h-4 w-4" />
-            </button>
-          )}
+         
+          
         </div>
 
         {/* 상품 정보 */}

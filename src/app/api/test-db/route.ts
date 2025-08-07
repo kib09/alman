@@ -1,23 +1,34 @@
+/**
+ * 🧪 개발용 데이터베이스 테스트 API
+ * 
+ * 이 API는 개발 및 디버깅 목적으로만 사용됩니다.
+ * 프로덕션 환경에서는 이 API를 비활성화하거나 제거하는 것을 권장합니다.
+ * 
+ * 사용법:
+ * - GET /api/test-db: 데이터베이스 연결 및 기본 데이터 조회 테스트
+ */
+
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export async function GET() {
+  // 프로덕션 환경에서는 테스트 API 비활성화
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: '테스트 API는 프로덕션 환경에서 사용할 수 없습니다.' },
+      { status: 403 }
+    )
+  }
+
   try {
-    console.log('🔍 데이터베이스 연결 테스트 시작')
-    console.log('🔗 DATABASE_URL 존재 여부:', !!process.env.DATABASE_URL)
-    console.log('🌍 NODE_ENV:', process.env.NODE_ENV)
-    
     // 데이터베이스 연결 테스트
     await prisma.$connect()
-    console.log('✅ Prisma 연결 성공')
     
     // 상품 수 조회
     const productCount = await prisma.product.count()
-    console.log('📦 총 상품 수:', productCount)
     
     // 카테고리 수 조회
     const categoryCount = await prisma.category.count()
-    console.log('📂 총 카테고리 수:', categoryCount)
     
     // 샘플 상품 조회
     const sampleProduct = await prisma.product.findFirst({
@@ -25,12 +36,6 @@ export async function GET() {
         category: true
       }
     })
-    
-    console.log('📋 샘플 상품:', sampleProduct ? {
-      id: sampleProduct.id,
-      name: sampleProduct.name,
-      category: sampleProduct.category.name
-    } : '상품 없음')
     
     return NextResponse.json({
       success: true,
@@ -46,13 +51,6 @@ export async function GET() {
       }
     })
   } catch (error) {
-    console.error('❌ 데이터베이스 연결 테스트 실패:', error)
-    console.error('❌ 오류 상세 정보:', {
-      name: error instanceof Error ? error.name : 'Unknown',
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : 'No stack trace'
-    })
-    
     return NextResponse.json({
       success: false,
       message: '데이터베이스 연결 실패',

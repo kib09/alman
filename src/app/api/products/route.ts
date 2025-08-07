@@ -4,17 +4,12 @@ import { prisma } from '@/lib/prisma'
 // GET /api/products - 상품 목록 조회
 export async function GET(request: NextRequest) {
   try {
-    console.log('🚀 API 요청 시작 - 환경:', process.env.NODE_ENV)
-    console.log('🔗 DATABASE_URL 존재 여부:', !!process.env.DATABASE_URL)
-    
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '12')
     const category = searchParams.get('category')
     const isSale = searchParams.get('isSale')
     const sortBy = searchParams.get('sortBy') || 'newest'
-
-    console.log('📋 상품 목록 요청 - 페이지:', page, '제한:', limit, '카테고리:', category, '할인:', isSale, '정렬:', sortBy)
 
     // 필터 조건 설정
     const where: any = {}
@@ -29,8 +24,6 @@ export async function GET(request: NextRequest) {
     if (isSale === 'true') {
       where.isSale = true
     }
-
-    console.log('🔍 필터 조건:', JSON.stringify(where, null, 2))
 
     // 정렬 조건 설정
     let orderBy: any = {}
@@ -51,7 +44,6 @@ export async function GET(request: NextRequest) {
     }
 
     // 상품 조회
-    console.log('🔍 Prisma 쿼리 실행 시작...')
     const products = await prisma.product.findMany({
       where,
       include: {
@@ -62,18 +54,11 @@ export async function GET(request: NextRequest) {
       orderBy,
     })
 
-    console.log('📦 조회된 상품 수:', products.length)
-    products.forEach((product: any, index: number) => {
-      console.log(`상품 ${index + 1}: ID=${product.id}, 이름=${product.name}, 카테고리=${product.category.name}`)
-    })
-
     // 총 상품 수 조회
     const total = await prisma.product.count({ where })
-    console.log('📊 총 상품 수:', total)
 
     // 응답 데이터 변환
     const transformedProducts = products.map((product: any) => {
-      console.log('Product ID in list:', product.id, 'Type:', typeof product.id) // 디버깅 로그 추가
       return {
         id: product.id,
         name: product.name,
@@ -98,10 +83,7 @@ export async function GET(request: NextRequest) {
       },
     }
 
-    console.log('✅ 응답 데이터:', {
-      productsCount: response.products.length,
-      pagination: response.pagination
-    })
+
 
     return NextResponse.json(response)
   } catch (error) {

@@ -34,30 +34,23 @@ export default function AdminDashboard() {
 
   const checkAdminStatus = async () => {
     if (!user) {
-      console.log('사용자가 로그인되지 않음')
       router.push('/login')
       return
     }
-
-    console.log('관리자 권한 확인 시작...', user)
     
     try {
       const response = await fetch('/api/admin/verify')
-      console.log('관리자 권한 확인 응답:', response.status)
       
       if (response.ok) {
         const data = await response.json()
-        console.log('관리자 권한 확인 성공:', data)
         setIsAdmin(true)
         await fetchStats()
       } else {
         const errorData = await response.json()
-        console.error('관리자 권한 확인 실패:', errorData)
         showToast('관리자 권한이 필요합니다.', 'error')
         router.push('/')
       }
     } catch (error) {
-      console.error('관리자 권한 확인 오류:', error)
       showToast('관리자 권한 확인에 실패했습니다.', 'error')
       router.push('/')
     } finally {
@@ -67,13 +60,10 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      console.log('관리자 통계 조회 시작...')
       const response = await fetch('/api/admin/stats')
-      console.log('API 응답 상태:', response.status)
       
       if (response.ok) {
         const data = await response.json()
-        console.log('받은 통계 데이터:', data)
         
         setStats({
           totalUsers: data.stats.overview.totalUsers,
@@ -81,17 +71,9 @@ export default function AdminDashboard() {
           totalOrders: data.stats.overview.totalOrders,
           totalRevenue: data.stats.overview.totalRevenue
         })
-        
-        console.log('설정된 통계:', {
-          totalUsers: data.stats.overview.totalUsers,
-          totalProducts: data.stats.overview.totalProducts,
-          totalOrders: data.stats.overview.totalOrders,
-          totalRevenue: data.stats.overview.totalRevenue
-        })
       } else {
-        console.error('API 응답 실패:', response.status, response.statusText)
         const errorData = await response.json()
-        console.error('에러 데이터:', errorData)
+        console.error('통계 조회 실패:', errorData)
       }
     } catch (error) {
       console.error('통계 조회 오류:', error)

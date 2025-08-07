@@ -4,11 +4,8 @@ import { verifyAdmin } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('관리자 통계 API 호출됨')
-    
     // 관리자 권한 확인
     const adminCheck = await verifyAdmin(request)
-    console.log('관리자 권한 확인 결과:', adminCheck)
     
     if (!adminCheck) {
       return NextResponse.json(
@@ -18,7 +15,6 @@ export async function GET(request: NextRequest) {
     }
 
     // 기본 통계 데이터 조회
-    console.log('데이터베이스 통계 조회 시작...')
     
     const [
       totalUsers,
@@ -68,12 +64,7 @@ export async function GET(request: NextRequest) {
       })
     ])
 
-    console.log('기본 통계 데이터 조회 완료:', {
-      totalUsers,
-      totalProducts,
-      totalOrders,
-      totalRevenue: totalRevenue._sum.total || 0
-    })
+
 
     // 월별 매출 통계 (최근 6개월) - MongoDB 호환성을 위해 수정
     const completedOrders = await prisma.order.findMany({

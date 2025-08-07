@@ -60,7 +60,7 @@ export default function Home() {
         if (response.ok) {
           const data = await response.json();
           setFeaturedProducts(data.products);
-          console.log('홈페이지 상품 로딩:', data.products.length, '개');
+  
           
           // 로그인된 사용자의 경우 위시리스트 상태 확인
           if (user && data.products.length > 0) {

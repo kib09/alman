@@ -1,11 +1,27 @@
+/**
+ * 🧪 개발용 테스트 주문 생성 API
+ * 
+ * 이 API는 개발 및 디버깅 목적으로만 사용됩니다.
+ * 프로덕션 환경에서는 이 API를 비활성화하거나 제거하는 것을 권장합니다.
+ * 
+ * 사용법:
+ * - POST /api/test-order: 테스트 주문 생성
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAuth } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
+  // 프로덕션 환경에서는 테스트 API 비활성화
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: '테스트 API는 프로덕션 환경에서 사용할 수 없습니다.' },
+      { status: 403 }
+    )
+  }
+
   try {
-    console.log('테스트 주문 생성 시작')
-    
     const user = await verifyAuth(request)
     if (!user) {
       return NextResponse.json(
@@ -43,17 +59,13 @@ export async function POST(request: NextRequest) {
         }
       }
     })
-
-    console.log('테스트 주문 생성 성공:', testOrder.id)
     
     return NextResponse.json({
       success: true,
       order: testOrder
     })
   } catch (error) {
-    console.error('테스트 주문 생성 오류:', error)
     const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.'
-    const errorStack = error instanceof Error ? error.stack : undefined
     
     return NextResponse.json(
       { 

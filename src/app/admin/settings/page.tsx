@@ -61,7 +61,6 @@ export default function AdminSettingsPage() {
         setSettings(data.settings)
       } else {
         // 기본 설정 사용
-        console.log('설정을 불러올 수 없어 기본값을 사용합니다.')
       }
     } catch (error) {
       console.error('설정 조회 오류:', error)

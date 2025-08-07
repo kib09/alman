@@ -102,10 +102,11 @@ async function createTestData() {
       }
     })
 
-    console.log('테스트 데이터가 성공적으로 생성되었습니다!')
-    console.log(`사용자: ${user.name}`)
-    console.log(`주문: ${order1.orderNumber}, ${order2.orderNumber}`)
-    console.log(`상품: ${product.name}`)
+    console.log('✅ 테스트 데이터 생성 완료')
+    console.log(`📋 생성된 데이터:`)
+    console.log(`   - 사용자: ${user.name}`)
+    console.log(`   - 주문: ${order1.orderNumber}, ${order2.orderNumber}`)
+    console.log(`   - 상품: ${product.name}`)
 
   } catch (error) {
     console.error('테스트 데이터 생성 오류:', error)

@@ -134,10 +134,7 @@ export default function CheckoutPage() {
   const totalAmount = subtotal + shipping
 
   // 디버깅을 위한 로그
-  console.log('orderType:', orderType)
-  console.log('cartItems:', cartItems)
-  console.log('orderItems:', orderItems)
-  console.log('totalAmount:', totalAmount)
+  
 
   const handleAddressChange = (field: keyof ShippingAddress, value: string) => {
     setShippingAddress(prev => ({ ...prev, [field]: value }))
@@ -223,14 +220,6 @@ export default function CheckoutPage() {
     setLoading(true)
 
     try {
-      console.log('주문 요청 데이터:', {
-        items: orderItems,
-        shippingAddress,
-        paymentMethod,
-        totalAmount,
-        clearCart: orderType === 'cart'
-      })
-
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: {
@@ -245,11 +234,8 @@ export default function CheckoutPage() {
         }),
       })
 
-      console.log('주문 응답 상태:', response.status)
-
       if (response.ok) {
         const result = await response.json()
-        console.log('주문 성공 결과:', result)
         showToast('주문이 성공적으로 완료되었습니다.', 'success')
         
         // 장바구니에서 주문한 경우 장바구니 비우기

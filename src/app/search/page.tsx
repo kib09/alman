@@ -162,7 +162,7 @@ function SearchPageContent() {
 
       if (response.ok) {
         const data = await response.json()
-        console.log('위시리스트 상태 확인 결과:', data)
+
         setWishlistedProductIds(data.wishlistedProductIds || [])
       }
     } catch (error) {
@@ -172,7 +172,7 @@ function SearchPageContent() {
 
   const isWishlisted = (productId: string) => {
     const result = wishlistedProductIds.includes(productId)
-    console.log(`상품 ${productId} 위시리스트 상태:`, result)
+    
     return result
   }
 

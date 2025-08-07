@@ -111,7 +111,7 @@ export async function PUT(request: NextRequest) {
       maxOrdersPerPage: parseInt(maxOrdersPerPage)
     }
 
-    // TODO: 실제 데이터베이스에 설정 저장
+    // 실제 데이터베이스에 설정 저장 (향후 구현 예정)
     // await prisma.settings.upsert({
     //   where: { id: 1 },
     //   update: updatedSettings,

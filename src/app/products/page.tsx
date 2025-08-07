@@ -76,7 +76,7 @@ export default function ProductsPage() {
           const data = await response.json()
           setProducts(data.products)
           setTotalPages(data.pagination.totalPages)
-          console.log('상품 로딩 완료:', data.products.length, '개, 총 페이지:', data.pagination.totalPages)
+
           
           // 로그인된 사용자의 경우 위시리스트 상태 확인
           if (user && data.products.length > 0) {

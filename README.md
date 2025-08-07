@@ -1,16 +1,52 @@
 # ALMAN - 남성 패션 쇼핑몰
 
-Next.js 15와 Prisma를 사용한 현대적인 남성 패션 쇼핑몰 웹 애플리케이션입니다.
+## 프로젝트 개요
+
+ALMAN은 Next.js 15와 Prisma를 기반으로 구축된 현대적인 남성 패션 쇼핑몰 웹 애플리케이션입니다. 이 프로젝트는 실제 상용 서비스 수준의 기능과 사용자 경험을 제공하기 위해 다음과 같은 요소들을 고려하여 설계되었습니다.
+
+###  프로젝트 목적
+- **실용적인 쇼핑몰 구현**: 실제 비즈니스에서 사용할 수 있는 완전한 기능의 쇼핑몰
+- **최신 기술 스택 활용**: Next.js 15, React 19, TypeScript 등 최신 기술 도입
+- **확장 가능한 아키텍처**: 향후 기능 확장과 유지보수를 고려한 구조 설계
+- **사용자 중심 UX**: 직관적이고 반응형인 사용자 인터페이스 구현
+
+###  설계 고려사항
+
+#### 기술적 고려사항
+- **성능 최적화**: Turbopack, 이미지 최적화, 코드 스플리팅을 통한 빠른 로딩
+- **타입 안정성**: TypeScript를 활용한 컴파일 타임 에러 방지
+- **데이터베이스 설계**: MongoDB와 Prisma를 활용한 효율적인 데이터 관리
+- **보안**: JWT 기반 인증, 비밀번호 해싱, 입력 검증 등 보안 요소 적용
+
+#### 사용자 경험 고려사항
+- **반응형 디자인**: 모바일, 태블릿, 데스크톱 모든 디바이스 최적화
+- **접근성**: 키보드 네비게이션, 스크린 리더 지원 등 웹 접근성 준수
+- **로딩 상태**: 스켈레톤 UI, 로딩 인디케이터를 통한 부드러운 사용자 경험
+- **에러 처리**: 사용자 친화적인 에러 메시지와 복구 방법 제공
+
+#### 비즈니스 로직 고려사항
+- **상품 관리**: 카테고리별 분류, 재고 관리, 가격 정책 등
+- **주문 프로세스**: 장바구니, 결제, 배송 추적 등 완전한 주문 플로우
+- **사용자 관리**: 회원가입, 로그인, 개인정보 관리, 주소 관리 등
+- **관리자 기능**: 상품 관리, 주문 관리, 사용자 관리, 통계 대시보드 등
+
+###  주요 특징
+- **완전한 기능 구현**: 쇼핑몰 운영에 필요한 모든 핵심 기능 포함
+- **현대적인 UI/UX**: Tailwind CSS와 Framer Motion을 활용한 세련된 디자인
+- **실시간 기능**: 검색 자동완성, 실시간 재고 확인 등
+- **확장성**: 모듈화된 구조로 새로운 기능 추가 용이
+- **개발자 친화적**: 상세한 문서화, 테스트 API, 유틸리티 스크립트 제공
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com)
 [![Next.js](https://img.shields.io/badge/Next.js-15.4.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-6.12.0-2D3748?style=for-the-badge&logo=prisma)](https://prisma.io/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+[![React](https://img.shields.io/badge/React-19.1.0-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 
-## 🚀 주요 기능
+##  주요 기능
 
-### 👤 사용자 기능
+###  사용자 기능
 - **회원가입/로그인**: JWT 기반 인증 시스템
 - **상품 탐색**: 카테고리별 상품 조회 및 상세 정보
 - **장바구니**: 상품 추가/삭제 및 수량 관리
@@ -18,28 +54,28 @@ Next.js 15와 Prisma를 사용한 현대적인 남성 패션 쇼핑몰 웹 애�
 - **주문 관리**: 주문 내역 조회 및 상태 확인
 - **계정 관리**: 주소 관리, 개인정보 수정
 
-### 🛍️ 쇼핑 기능
+###  쇼핑 기능
 - **상품 검색**: 실시간 검색 및 자동완성
 - **상품 상세**: 이미지 갤러리, 사이즈/컬러 선택
 - **리뷰 시스템**: 상품별 평점 및 리뷰
 - **할인 상품**: 세일 상품 표시 및 가격 비교
 - **신상품**: 최신 상품 하이라이트
 
-### 👨‍💼 관리자 기능
+ 관리자 기능
 - **상품 관리**: 상품 추가/수정/삭제
 - **주문 관리**: 주문 상태 변경 및 관리
 - **사용자 관리**: 회원 정보 조회 및 관리
 - **통계 대시보드**: 매출 및 주문 통계
 - **설정 관리**: 사이트 설정 및 관리
 
-### 🎨 UI/UX 기능
+###  UI/UX 기능
 - **반응형 디자인**: 모바일/태블릿/데스크톱 최적화
 - **다크모드 지원**: 사용자 선호도에 따른 테마 변경
 - **스켈레톤 로딩**: 부드러운 로딩 경험
 - **토스트 알림**: 사용자 피드백 시스템
 - **애니메이션**: Framer Motion 기반 인터랙션
 
-## 🛠️ 기술 스택
+##  기술 스택
 
 ### Frontend
 - **Framework**: Next.js 15.4.4 (App Router)
@@ -48,6 +84,7 @@ Next.js 15와 Prisma를 사용한 현대적인 남성 패션 쇼핑몰 웹 애�
 - **UI Components**: Headless UI 2.2.6
 - **Icons**: Lucide React 0.525.0
 - **Animations**: Framer Motion 12.23.9
+- **React**: 19.1.0
 
 ### Backend
 - **Runtime**: Node.js 20
@@ -58,7 +95,7 @@ Next.js 15와 Prisma를 사용한 현대적인 남성 패션 쇼핑몰 웹 애�
 ### Database
 - **Database**: MongoDB 6.18.0
 - **ORM**: Prisma 6.12.0
-- **Connection**: MongoDB Atlas (권장)
+- **Connection**: MongoDB Atlas 
 
 ### Development Tools
 - **Package Manager**: npm
@@ -66,79 +103,6 @@ Next.js 15와 Prisma를 사용한 현대적인 남성 패션 쇼핑몰 웹 애�
 - **Type Checking**: TypeScript 5.0
 - **Build Tool**: Turbopack (Next.js 15)
 - **Script Runner**: tsx 4.20.3
-
-## 📦 설치 및 실행
-
-### 1. 프로젝트 클론
-```bash
-git clone <repository-url>
-cd alman
-```
-
-### 2. 의존성 설치
-```bash
-npm install
-```
-
-### 3. 환경 변수 설정
-`.env.local` 파일을 생성하고 다음 내용을 추가하세요:
-
-```env
-# 데이터베이스 연결 (MongoDB Atlas 권장)
-DATABASE_URL="mongodb+srv://username:password@cluster.mongodb.net/alman?retryWrites=true&w=majority"
-
-# JWT 시크릿 키 (32자 이상의 랜덤 문자열)
-JWT_SECRET="your-super-secret-jwt-key-here"
-
-# 선택사항: Unsplash API (이미지 자동화용)
-UNSPLASH_ACCESS_KEY="your-unsplash-access-key"
-```
-
-### 4. 데이터베이스 설정
-```bash
-# Prisma 클라이언트 생성
-npx prisma generate
-
-# 데이터베이스 마이그레이션
-npx prisma db push
-
-# 샘플 데이터 시드 (권장)
-npm run db:seed:clean
-```
-
-### 5. 개발 서버 실행
-```bash
-npm run dev
-```
-
-브라우저에서 `http://localhost:3000`으로 접속하세요.
-
-## 🎨 이미지 자동화 기능
-
-### 상품 이미지 자동 업데이트
-
-프로젝트에는 상품별로 적합한 이미지를 자동으로 할당하는 스크립트가 포함되어 있습니다.
-
-#### 1. 데모 이미지 업데이트 (API 키 불필요)
-```bash
-npx tsx scripts/update-images-demo.ts
-```
-
-#### 2. Unsplash API를 사용한 실시간 이미지 검색 (API 키 필요)
-```bash
-# 1. https://unsplash.com/developers 에서 무료 계정 생성
-# 2. Application 생성 후 Access Key 복사
-# 3. .env.local 파일에 UNSPLASH_ACCESS_KEY 추가
-# 4. 스크립트 실행
-npx tsx scripts/update-product-images.ts
-```
-
-### 이미지 업데이트 후 데이터베이스 재시드
-```bash
-npm run db:seed:clean
-```
-
-## 📁 프로젝트 구조
 
 ```
 alman/
@@ -150,6 +114,7 @@ alman/
 │   ├── seed-data.ts           # 원본 상품 데이터
 │   └── seed.ts                # 레거시 시드 스크립트
 ├── scripts/
+│   ├── create-test-data.ts    # 테스트 데이터 생성
 │   ├── fix-product-data.ts    # 상품 데이터 수정 스크립트
 │   ├── migrate-user-addresses.ts # 사용자 주소 마이그레이션
 │   ├── test-login.ts          # 로그인 테스트 스크립트
@@ -203,9 +168,11 @@ alman/
 │   │   │   ├── test-prisma/   # Prisma 테스트
 │   │   │   ├── test-user/     # 사용자 테스트
 │   │   │   ├── user/          # 사용자 API
-│   │   │   │   └── addresses/ # 주소 관리 API
-│   │   │   │       └── [id]/  # 개별 주소
-│   │   │   │           └── default/ # 기본 주소 설정
+│   │   │   │   ├── addresses/ # 주소 관리 API
+│   │   │   │   │   └── [id]/  # 개별 주소
+│   │   │   │   │       └── default/ # 기본 주소 설정
+│   │   │   │   └── recent-orders/ # 최근 주문 API
+│   │   │   │   └── stats/     # 사용자 통계 API
 │   │   │   ├── users/         # 사용자 관리 API
 │   │   │   └── wishlist/      # 위시리스트 API
 │   │   │       ├── [id]/      # 개별 위시리스트 아이템
@@ -246,10 +213,12 @@ alman/
 │   │       ├── AddressInput.tsx # 주소 입력 컴포넌트
 │   │       ├── AddressSelector.tsx # 주소 선택 컴포넌트
 │   │       ├── CategoryCardSkeleton.tsx # 카테고리 스켈레톤
+│   │       ├── ConfirmModal.tsx # 확인 모달
 │   │       ├── LoginModal.tsx # 로그인 모달
 │   │       ├── ProductCardSkeleton.tsx # 상품 카드 스켈레톤
 │   │       ├── ProductDetailSkeleton.tsx # 상품 상세 스켈레톤
 │   │       ├── SearchInput.tsx # 검색 입력 컴포넌트
+│   │       ├── ShareModal.tsx # 공유 모달
 │   │       ├── Skeleton.tsx   # 기본 스켈레톤
 │   │       └── Toast.tsx      # 토스트 알림
 │   ├── contexts/              # React Context
@@ -271,23 +240,18 @@ alman/
 ├── next.config.ts             # Next.js 설정
 ├── package.json               # 프로젝트 설정
 ├── postcss.config.mjs         # PostCSS 설정
-├── prisma/                    # Prisma 설정 및 스크립트
-├── scripts/                   # 유틸리티 스크립트
-├── src/                       # 소스 코드
 ├── tsconfig.json              # TypeScript 설정
 ├── vercel.json                # Vercel 배포 설정
 └── README.md                  # 프로젝트 문서
 ```
 
-## 🎯 주요 개선사항
+##  주요 개선사항
 
 ### UX/UI 개선
-- ✅ 메인 페이지 스켈레톤 이미지 제거
-- ✅ 모든 버튼에 호버 포인터 효과 추가
 - ✅ 카테고리별 페이지네이션 개선
 - ✅ 제품 상세 페이지 인터랙션 향상
 - ✅ 반응형 디자인 최적화
-- ✅ 다크모드 지원
+
 
 ### 데이터 최적화
 - ✅ 중복 상품 정보 정리 (베이직 티셔츠 11개 → 1개)
@@ -307,27 +271,6 @@ alman/
 - ✅ 코드 스플리팅 및 지연 로딩
 - ✅ API 응답 캐싱
 
-## 🔧 개발 명령어
-
-```bash
-# 개발 서버 실행 (Turbopack 사용)
-npm run dev
-
-# 프로덕션 빌드
-npm run build
-
-# 프로덕션 서버 실행
-npm start
-
-# 린트 검사
-npm run lint
-
-# 데이터베이스 시드
-npm run db:seed:clean
-
-# Prisma 스튜디오 실행
-npx prisma studio
-```
 
 ## 📊 데이터베이스 스키마
 
@@ -340,6 +283,7 @@ npx prisma studio
 - **Order**: 주문 정보 (배송지, 연락처 등)
 - **OrderItem**: 주문 상품 상세
 - **Review**: 상품 리뷰 및 평점
+- **Address**: 사용자 배송 주소 관리
 
 ### 주요 기능
 - **관계형 데이터**: Prisma를 통한 효율적인 관계 관리
@@ -352,50 +296,6 @@ npx prisma studio
 ### Vercel 배포 (현재 배포됨)
 이 프로젝트는 현재 Vercel에 배포되어 있습니다.
 
-#### 배포 설정
-- **Framework**: Next.js
-- **Build Command**: `npm run build`
-- **Install Command**: `npm install`
-- **Output Directory**: `.next`
-- **Node Version**: 20.x
-
-#### 환경 변수 설정
-Vercel 대시보드에서 다음 환경 변수를 설정하세요:
-```env
-DATABASE_URL="your-production-mongodb-url"
-JWT_SECRET="your-production-jwt-secret"
-```
-
-### Netlify 배포 (대안)
-프로젝트에는 `netlify.toml` 설정 파일이 포함되어 있어 Netlify 배포도 지원합니다.
-
-## 🧪 테스트 API
-
-프로젝트에는 다양한 테스트 API 엔드포인트가 포함되어 있습니다:
-
-- `/api/test` - 기본 테스트
-- `/api/test-db` - 데이터베이스 연결 테스트
-- `/api/test-prisma` - Prisma 클라이언트 테스트
-- `/api/test-user` - 사용자 관련 테스트
-- `/api/test-order` - 주문 관련 테스트
-
-## 🤝 기여하기
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 라이선스
-
-이 프로젝트는 MIT 라이선스 하에 배포됩니다.
-
-## 📞 문의
-
-프로젝트에 대한 문의사항이 있으시면 이슈를 생성해주세요.
-
-## 🙏 감사의 말
 
 - [Next.js](https://nextjs.org/) - React 프레임워크
 - [Prisma](https://prisma.io/) - 데이터베이스 ORM
@@ -403,3 +303,5 @@ JWT_SECRET="your-production-jwt-secret"
 - [Unsplash](https://unsplash.com/) - 고품질 이미지 제공
 - [Lucide](https://lucide.dev/) - 아이콘 라이브러리
 - [Vercel](https://vercel.com/) - 배포 플랫폼
+- [Framer Motion](https://www.framer.com/motion/) - 애니메이션 라이브러리
+- [Headless UI](https://headlessui.com/) - 접근성 UI 컴포넌트

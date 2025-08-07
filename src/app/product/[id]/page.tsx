@@ -81,13 +81,10 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      console.log('Fetching product with ID:', id) // 디버깅 로그 추가
       try {
         const response = await fetch(`/api/products/${id}`)
-        console.log('API Response status:', response.status) // 디버깅 로그 추가
         if (response.ok) {
           const data = await response.json()
-          console.log('Product data:', data) // 디버깅 로그 추가
           setProduct(data)
           
           // 관련 상품 가져오기 (같은 카테고리)
@@ -98,8 +95,6 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
           }
         } else {
           console.error('상품을 찾을 수 없습니다')
-          const errorData = await response.json()
-          console.error('Error data:', errorData) // 디버깅 로그 추가
         }
       } catch (error) {
         console.error('상품 로딩 오류:', error)

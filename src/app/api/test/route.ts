@@ -1,13 +1,28 @@
+/**
+ * 🧪 개발용 테스트 API
+ * 
+ * 이 API는 개발 및 디버깅 목적으로만 사용됩니다.
+ * 프로덕션 환경에서는 이 API를 비활성화하거나 제거하는 것을 권장합니다.
+ * 
+ * 사용법:
+ * - GET /api/test: 기본 테스트 (데이터베이스 연결, 상품 조회)
+ */
+
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 export async function GET() {
+  // 프로덕션 환경에서는 테스트 API 비활성화
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { error: '테스트 API는 프로덕션 환경에서 사용할 수 없습니다.' },
+      { status: 403 }
+    )
+  }
+
   try {
-    console.log('🧪 테스트 API 호출됨')
-    
     // 데이터베이스 연결 테스트
     const productCount = await prisma.product.count()
-    console.log('📊 총 상품 수:', productCount)
     
     // 첫 번째 상품 조회
     const firstProduct = await prisma.product.findFirst({
@@ -15,14 +30,6 @@ export async function GET() {
         category: true,
       },
     })
-    
-    if (firstProduct) {
-      console.log('🔍 첫 번째 상품:', {
-        id: firstProduct.id,
-        name: firstProduct.name,
-        category: firstProduct.category.name,
-      })
-    }
     
     return NextResponse.json({
       success: true,
@@ -34,7 +41,6 @@ export async function GET() {
       } : null,
     })
   } catch (error) {
-    console.error('❌ 테스트 API 오류:', error)
     return NextResponse.json(
       { 
         success: false, 

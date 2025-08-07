@@ -5,11 +5,8 @@ import { verifyAdmin } from '@/lib/auth'
 // GET /api/admin/products - 관리자 상품 목록 조회
 export async function GET(request: NextRequest) {
   try {
-    console.log('관리자 상품 목록 조회 시작')
-    
     // 관리자 권한 확인
     const adminCheck = await verifyAdmin(request)
-    console.log('관리자 권한 확인 결과:', adminCheck)
     
     if (!adminCheck) {
       return NextResponse.json(
@@ -42,8 +39,6 @@ export async function GET(request: NextRequest) {
     }
 
     // 상품 조회
-    console.log('상품 조회 조건:', where)
-    
     const [products, total] = await Promise.all([
       prisma.product.findMany({
         where,
@@ -63,7 +58,7 @@ export async function GET(request: NextRequest) {
       prisma.product.count({ where })
     ])
 
-    console.log('상품 조회 결과:', { productsCount: products.length, total })
+
 
     return NextResponse.json({
       success: true,

@@ -13,9 +13,6 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    console.log('API: Looking for product with ID:', id) // 디버깅 로그 추가
-    console.log('API: ID type:', typeof id) // ID 타입 확인
-    console.log('API: ID length:', id.length) // ID 길이 확인
     
     const product = await prisma.product.findUnique({
       where: {
@@ -38,7 +35,7 @@ export async function GET(
       },
     })
 
-    console.log('API: Found product:', product ? 'Yes' : 'No') // 디버깅 로그 추가
+
 
     if (!product) {
       return NextResponse.json(

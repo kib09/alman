@@ -20,8 +20,7 @@ export async function GET(request: NextRequest) {
       select: { isAdmin: true }
     })
 
-    console.log('관리자 권한 확인 - 사용자 ID:', user.id)
-    console.log('관리자 권한 확인 - isAdmin:', adminUser?.isAdmin)
+
 
     if (!adminUser?.isAdmin) {
       return NextResponse.json(

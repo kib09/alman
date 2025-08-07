@@ -4,19 +4,15 @@ import { prisma } from '@/lib/prisma'
 export async function GET() {
   try {
     // 1. 데이터베이스 연결 테스트
-    console.log('Prisma 연결 테스트 시작...')
     
     // 2. 사용자 수 확인
     const userCount = await prisma.user.count()
-    console.log('현재 사용자 수:', userCount)
     
     // 3. 상품 수 확인
     const productCount = await prisma.product.count()
-    console.log('현재 상품 수:', productCount)
     
     // 4. 카테고리 수 확인
     const categoryCount = await prisma.category.count()
-    console.log('현재 카테고리 수:', categoryCount)
     
     // 5. 첫 번째 사용자 조회 (있다면)
     let firstUser = null
