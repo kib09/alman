@@ -47,10 +47,10 @@ const nextConfig: NextConfig = {
   compress: true,
   // 소스맵 비활성화 (프로덕션에서)
   productionBrowserSourceMaps: false,
-  // 실험적 기능
-  experimental: {
-    optimizeCss: true,
-  },
+  // 실험적 기능 (CSS 최적화는 배포 환경에서 문제를 일으킬 수 있으므로 비활성화)
+  // experimental: {
+  //   optimizeCss: true,
+  // },
 };
 
 export default nextConfig;
