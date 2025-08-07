@@ -5,7 +5,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-primary text-primary-foreground">
+    <footer className="bg-primary text-primary-foreground" role="contentinfo">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* 회사 정보 */}
@@ -15,18 +15,38 @@ const Footer = () => {
               세련된 남성 패션을 만나보세요. 
               정장부터 캐주얼까지, 당신만의 스타일을 완성하세요.
             </p>
-            <div className="flex space-x-4">
-              <Link href="#" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                <Facebook className="h-5 w-5" />
+            <div className="flex space-x-4" role="list" aria-label="소셜 미디어 링크">
+              <Link 
+                href="#" 
+                className="text-primary-foreground/70 hover:text-primary-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:ring-offset-2 rounded"
+                aria-label="Facebook에서 ALMAN 팔로우"
+                role="listitem"
+              >
+                <Facebook className="h-5 w-5" aria-hidden="true" />
               </Link>
-              <Link href="#" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                <Twitter className="h-5 w-5" />
+              <Link 
+                href="#" 
+                className="text-primary-foreground/70 hover:text-primary-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:ring-offset-2 rounded"
+                aria-label="Twitter에서 ALMAN 팔로우"
+                role="listitem"
+              >
+                <Twitter className="h-5 w-5" aria-hidden="true" />
               </Link>
-              <Link href="#" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                <Instagram className="h-5 w-5" />
+              <Link 
+                href="#" 
+                className="text-primary-foreground/70 hover:text-primary-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:ring-offset-2 rounded"
+                aria-label="Instagram에서 ALMAN 팔로우"
+                role="listitem"
+              >
+                <Instagram className="h-5 w-5" aria-hidden="true" />
               </Link>
-              <Link href="#" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
-                <Youtube className="h-5 w-5" />
+              <Link 
+                href="#" 
+                className="text-primary-foreground/70 hover:text-primary-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:ring-offset-2 rounded"
+                aria-label="YouTube에서 ALMAN 팔로우"
+                role="listitem"
+              >
+                <Youtube className="h-5 w-5" aria-hidden="true" />
               </Link>
             </div>
           </div>
@@ -36,27 +56,42 @@ const Footer = () => {
             <h4 className="font-semibold">쇼핑</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/category/suits" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                <Link 
+                  href="/category/suits" 
+                  className="text-primary-foreground/70 hover:text-primary-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:ring-offset-2 rounded"
+                >
                   정장
                 </Link>
               </li>
               <li>
-                <Link href="/category/casual" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                <Link 
+                  href="/category/casual" 
+                  className="text-primary-foreground/70 hover:text-primary-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:ring-offset-2 rounded"
+                >
                   캐주얼
                 </Link>
               </li>
               <li>
-                <Link href="/category/shoes" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                <Link 
+                  href="/category/shoes" 
+                  className="text-primary-foreground/70 hover:text-primary-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:ring-offset-2 rounded"
+                >
                   신발
                 </Link>
               </li>
               <li>
-                <Link href="/category/accessories" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                <Link 
+                  href="/category/accessories" 
+                  className="text-primary-foreground/70 hover:text-primary-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:ring-offset-2 rounded"
+                >
                   액세서리
                 </Link>
               </li>
               <li>
-                <Link href="/category/sportswear" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+                <Link 
+                  href="/category/sportswear" 
+                  className="text-primary-foreground/70 hover:text-primary-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary-foreground focus:ring-offset-2 rounded"
+                >
                   스포츠웨어
                 </Link>
               </li>
