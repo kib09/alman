@@ -23,31 +23,22 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://alman.com'),
+  metadataBase: new URL('https://alman.vercel.app'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'website',
     locale: 'ko_KR',
-    url: 'https://alman.com',
+    url: 'https://alman.vercel.app',
     title: 'ALMAN - 남성 패션 쇼핑몰',
     description: '세련된 남성 패션을 만나보세요. 정장, 캐주얼, 액세서리까지 모든 것을 한 곳에서.',
     siteName: 'ALMAN',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'ALMAN - 남성 패션 쇼핑몰',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'ALMAN - 남성 패션 쇼핑몰',
     description: '세련된 남성 패션을 만나보세요. 정장, 캐주얼, 액세서리까지 모든 것을 한 곳에서.',
-    images: ['/og-image.jpg'],
   },
   robots: {
     index: true,
@@ -88,8 +79,8 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               "name": "ALMAN",
-              "url": "https://alman.com",
-              "logo": "https://alman.com/logo.png",
+              "url": "https://alman.vercel.app",
+              "logo": "https://alman.vercel.app/ALMAN/Alman1.PNG",
               "description": "세련된 남성 패션을 만나보세요. 정장, 캐주얼, 액세서리까지 모든 것을 한 곳에서.",
               "address": {
                 "@type": "PostalAddress",
