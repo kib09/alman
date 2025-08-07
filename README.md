@@ -78,34 +78,34 @@ ALMAN은 Next.js 15와 Prisma를 기반으로 구축된 현대적인 남성 패�
 ##  스크린샷
 
 ### 메인 페이지
-![메인 페이지](/alman/Alman1.PNG)
+![메인 페이지](./public/ALMAN/Alman1.PNG)
 
 ### 위시리스트
-![위시리스트](/alman/Alman2.PNG)
+![위시리스트](./public/ALMAN/Alman2.PNG)
 
 ### 카테고리 페이지
-![카테고리 페이지](/alman/Alman3.PNG)
+![카테고리 페이지](./public/ALMAN/Alman3.PNG)
 
 ### 장바구니
-![장바구니](/alman/Alman4.PNG)
+![장바구니](./public/ALMAN/Alman4.PNG)
 
 ### 주문하기 (결제 페이지)
-![주문하기](/alman/Alman5.PNG)
+![주문하기](./public/ALMAN/Alman5.PNG)
 
 ### 주문완료
-![주문완료](/alman/Alman6.PNG)
+![주문완료](./public/ALMAN/Alman6.PNG)
 
 ### 마이페이지
-![마이페이지](/alman/Alman7.PNG)
+![마이페이지](./public/ALMAN/Alman7.PNG)
 
 ### 관리자 대시보드
-![관리자 대시보드](/alman/Alman8.PNG)
+![관리자 대시보드](./public/ALMAN/Alman8.PNG)
 
-### 상품관리
-![상품관리](/alman/Alman9.PNG)
+### 상품관리(관리자)
+![상품관리](./public/ALMAN/Alman9.PNG)
 
-### 주문관리
-![주문관리](/alman/Alman10.PNG)
+### 주문관리(관리자)
+![주문관리](./public/ALMAN/Alman10.PNG)
 
 ##  기술 스택
 
